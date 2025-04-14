@@ -14,10 +14,6 @@ const taskSchema = new Schema({
     trim: true,
     minlength: 3,
   },
-  description: {
-    type: String,
-    trim: true,
-  },
   priority: {
     type: String,
     enum: ["low", "medium", "high"],
@@ -27,9 +23,10 @@ const taskSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  projectId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Project",
+    required: true,
   },
 });
 
