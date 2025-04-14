@@ -15,6 +15,8 @@
  * @param {string} taskData.title - The title of the task.
  * @param {string} taskData.description - The description of the task.
  * @param {string} taskData.priority - The priority level of the task.
+ * @param {boolean} [taskData.completed=false] - The completion status of the task.
+ * @param {string} taskData.projectId - The ID of the project the task belongs to.
  * @returns {Promise<Object>} A promise that resolves to the created task object.
  */
 
@@ -43,8 +45,17 @@ async function getAll() {
   return await Task.find().sort({ createdAt: 1 });
 }
 
-async function create({ title, description, priority }) {
-  return await Task.create({ title, description, priority });
+async function create({ title, priority, completed, projectId }) {
+  if (!projectId) {
+    throw new Error("Project ID is required to create a task.");
+  }
+
+  return await Task.create({
+    title,
+    priority,
+    completed,
+    projectId,
+  });
 }
 
 async function update(id, updates) {
