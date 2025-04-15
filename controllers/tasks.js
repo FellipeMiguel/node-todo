@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const Task = require("../model/Task");
+const Project = require("../model/Project");
 const { getAll, create, update, remove } = require("../services/tasks");
 
 async function getAllTasks(req, res, next) {
@@ -13,17 +15,37 @@ async function getAllTasks(req, res, next) {
 
 async function createTask(req, res, next) {
   try {
-    const task = await create({
-      title: req.body.title,
-      priority: req.body.priority,
-      completed: req.body.completed,
-      projectId: req.body.projectId,
-    });
-    res.status(201).json(task);
-  } catch (err) {
-    if (err.name === "ValidationError") {
-      return res.status(400).json({ error: err.message });
+    const { projectId, title, priority, completed } = req.body;
+
+    // Verifica se o ID do projeto foi fornecido
+    if (!projectId) {
+      return res
+        .status(400)
+        .json({ error: "Project ID is required to create a task." });
     }
+
+    // Verifica se o projeto existe
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ error: "Project not found." });
+    }
+
+    // Cria a tarefa no banco de dados
+    const task = await Task.create({
+      title,
+      priority,
+      completed,
+      projectId,
+    });
+
+    // Adiciona o ID da tarefa ao array de tasks do projeto
+    project.tasks.push(task._id);
+    await project.save();
+
+    res
+      .status(201)
+      .json({ message: "Task created and added to project.", task });
+  } catch (err) {
     next(err);
   }
 }

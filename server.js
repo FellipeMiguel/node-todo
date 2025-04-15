@@ -20,12 +20,14 @@ const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 const tasksRouter = require("./routes/tasks");
+const projectsRouter = require("./routes/projects");
 
 const app = express();
 
 app.use(express.json());
 
-app.use("/tasks", tasksRouter);
+app.use("/api/tasks", tasksRouter);
+app.use("/api/projects", projectsRouter);
 
 mongoose
   .connect(MONGODB_URI)

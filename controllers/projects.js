@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+
+const Project = require("../model/Project");
 const { getAll, create, remove, update } = require("../services/projects");
 
 async function getAllProjects(req, res, next) {
@@ -11,16 +14,17 @@ async function getAllProjects(req, res, next) {
 
 async function createProject(req, res, next) {
   try {
-    const project = await create({
-      name: req.body.name,
-      description: req.body.description,
-      duaDate: req.body.duaDate,
-    });
+    const { title, description, dueDate } = req.body;
+
+    if (!title || !description || !dueDate) {
+      return res.status(400).json({
+        error: "All fields (title, description, dueDate) are required.",
+      });
+    }
+
+    const project = await Project.create({ title, description, dueDate });
     res.status(201).json(project);
   } catch (err) {
-    if (err.name === "ValidationError") {
-      return res.status(400).json({ error: err.message });
-    }
     next(err);
   }
 }
@@ -28,7 +32,7 @@ async function createProject(req, res, next) {
 async function updateProject(req, res, next) {
   try {
     const { id } = req.params;
-    if (!moongose.isValidObjectId(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: "Invalid ID" });
     }
     const project = await update(id, req.body);
@@ -44,7 +48,7 @@ async function updateProject(req, res, next) {
 async function removeProject(req, res, next) {
   try {
     const { id } = req.params;
-    if (!moongose.isValidObjectId(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: "Invalid ID" });
     }
     const project = await remove(id);

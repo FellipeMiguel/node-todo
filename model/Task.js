@@ -1,13 +1,6 @@
-/**
- * Imports the `Schema` and `model` functions from the Mongoose library.
- *
- * - `Schema`: Used to define the structure of documents within a MongoDB collection.
- * - `model`: Used to create a model based on a schema, which provides an interface to interact with the database.
- */
+const mongoose = require("mongoose");
 
-const { Schema, model } = require("mongoose");
-
-const taskSchema = new Schema({
+const taskSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -30,4 +23,4 @@ const taskSchema = new Schema({
   },
 });
 
-module.exports = model("Task", taskSchema);
+module.exports = mongoose.model("Task", taskSchema);
